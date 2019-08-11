@@ -1,0 +1,50 @@
+$accent-color: #A3AF40;
+$main-color: #0067a3;
+
+
+@mixin icon-square {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+}
+* {
+    margin: 0;
+    padding: 0;
+}
+.container {
+    padding: 0 10px;
+}
+.navigation {
+    position: fixed;
+    z-index: 123;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 45px;
+    background: $main-color;
+    line-height: 45px;
+    &__container {
+      margin: 0 auto;
+      display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    }
+    .icon {
+      @include icon-square;
+      background: rgba(255,255,255,0.3);
+      text-align: center;
+      color: #fff;
+      margin: 5px;
+      &:hover {
+        background: rgba(255,255,255,0.18);
+      }
+      a {
+        color: red;
+      }
+    }
+  }
+.dashboard {
+  background: #eee;
+}
+
+
