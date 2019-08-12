@@ -11,12 +11,13 @@ export default new Vuex.Store({
         name: 'test 1',
         color: 'blue',
         image: 'https://images.freeimages.com/images/large-previews/85a/daisy-s-1375598.jpg',
+        addingList: false,
         lists: [
           {
             id: 1,
             title: 'list 1',
             editTitle: false,
-            addingTask: true,
+            addingTask: false,
             tasks: [
               {
                 id: 1,
@@ -117,7 +118,7 @@ export default new Vuex.Store({
     ]
   },
   getters: {
-    getBoard: state => state.boards.filter(v => v.id == this.$route.params.id)
+    // getBoard: state => state.boards.filter(v => v.id == this.$route.params.id)
   },
   mutations: {
 

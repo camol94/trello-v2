@@ -3,9 +3,13 @@ $main-color: #0067a3;
 
 
 @mixin icon-square {
+  cursor: pointer;
   width: 30px;
   height: 30px;
   border-radius: 6px;
+  &:hover {
+    background: rgba($color: #000000, $alpha: 0.1)
+}
 }
 * {
     margin: 0;
