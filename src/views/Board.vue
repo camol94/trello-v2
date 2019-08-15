@@ -1,7 +1,7 @@
 <template>
     <div class="dashboard">
         <navigation/>
-        <div class="dashboard__container container" v-for="board in boards" :key="board.id">
+        <div class="dashboard__container" v-for="board in boards" :key="board.id">
             <h1 class="dashboard__title">Your dashboard. {{board.name}}</h1>
             <div v-for="list in board.lists" class="listWrapper" :key="list.id">
                 <div class="list">
@@ -10,7 +10,9 @@
                             {{list.title}}
                         </div>
                         <input v-else type="text" v-model="list.title" @keyup.enter="list.editTitle = !list.editTitle" class="list__header__title__edit">
-                        <b-icon pack="fas" icon="ellipsis-h" class="list__header__menu"></b-icon>
+                        <span @click="toggleListOptions(list)">
+                            <b-icon pack="fas" icon="ellipsis-h" class="list__header__menu"></b-icon>
+                        </span>
                     </div>                    
                     <div class="taskWrapper">
                         <div v-for="task in list.tasks" class="task" :key="task.id">
@@ -32,24 +34,40 @@
                             <b-icon pack="fas" icon="plus"></b-icon>Add new task.
                         </div>
                         <div v-else class="add-new-list__add-list-controls">
-                            <input type="text" placeholder="Enter task name." class="add-new-list__input">
-                            <b-button class="add-new-list__add-button">Add task</b-button>
+                            <input type="text" placeholder="Enter task name." class="add-new-list__input" v-model="addNewTaskTitle">
+                            <b-button class="add-new-list__add-button" @click="addNewTask(list)">Add task</b-button>
                             <span @click="list.addingTask = !list.addingTask">
                                 <b-icon pack="fas" icon="times" class="add-new-list__close-button"></b-icon>
                             </span>
                         </div> 
                     </div>
+                    <!-- <div class="list__options" v-if="list.actionMenu">
+                        <div class="list__options__header">
+                            <div class="list__options__header__title">
+                                Actions menu
+                            </div>
+                            <div class="list__options__header__close">
+                                <span><b-icon pack="fas" icon="times" class="list__options__header__close-button" ></b-icon></span>
+                            </div>
+                        </div>
+                        <div class="list__options__content">
+                            <ul>
+                                <li>Remove list</li>
+                            </ul>
+                        </div>
+                    </div> -->
+                    <listoptions v-if="list.actionMenu" @closeOptions="toggleListOptions(list)" ></listoptions>
                 </div>
             </div>
             <div class="listWrapper">                
                 <div class="list add-new-list">
-                    <div v-if="!board.addingList" class="add-new-list__open-add-list" @click="board.addingList = !board.addingList">
+                    <div v-if="!board.addingList" class="add-new-list__open-add-list" @click="toggleAddingList(board)">
                     <b-icon pack="fas" icon="plus"></b-icon>Add new list.
                 </div>                
                 <div v-else class="add-new-list__add-list-controls">
                     <input type="text" placeholder="Enter list name." class="add-new-list__input" v-model="addNewListTitle">
                     <b-button class="add-new-list__add-button" @click="addNewList(board)">Add list</b-button>
-                    <span><b-icon pack="fas" icon="times" class="add-new-list__close-button"></b-icon></span>
+                    <span @click="toggleAddingList(board)"><b-icon pack="fas" icon="times" class="add-new-list__close-button" ></b-icon></span>
                 </div>      
                 </div>              
             </div>
@@ -58,11 +76,13 @@
 </template>
 
 <script>
+
 export default {
     data() {
         return {
             boardId: this.$route.params.id,
             addNewListTitle: '',
+            addNewTaskTitle: '',
             // getBoards: this.$store.state.boards
             // board: this.$store.state.board,
         }
@@ -74,14 +94,44 @@ export default {
     },
     methods: {
         addNewList(board) {
+            // console.log(board.newListId)
+            if (!this.addNewListTitle) {
+                return
+            }
             board.addingList = false;
             board.lists.push({
-                id: 3,
+                id: board.newListId,
                 title: this.addNewListTitle,
-            })
+                editTitle: false,
+                addingTask: false,
+                actionMenu: false,
+                newTaskId: 1,
+                tasks: [],
+            });
+            board.newListId++;
+            this.addNewListTitle = '';
+            // console.log(board.newListId)
         },
-        addNewTask() {
-            console.log('new task')
+        addNewTask(list) {
+            console.log('Task title: ' + this.addNewTaskTitle);
+            if (!this.addNewTaskTitle) {
+                return
+            }
+            list.addingTask = false;
+            list.tasks.push({
+                id: list.newTaskId,
+                title: this.addNewTaskTitle,
+                text: '',
+                labels: [],
+            })
+            list.newTaskId++;
+            this.addNewTaskTitle = '';
+        },
+        toggleAddingList(board) {
+            board.addingList = !board.addingList;
+        },
+        toggleListOptions(list) {
+            list.actionMenu = !list.actionMenu;
         }
     }
 }
@@ -123,10 +173,10 @@ input {
     width: 250px;
     background: darken($color: #ffffff, $amount: 12%);
     border: 1px solid #ccc;
-    border-radius: 4px;
-    
+    border-radius: 4px;    
     margin: 10px;
     padding: 12px;
+    position: relative;
     &__header {
         display: flex;
         justify-content: space-between;
@@ -149,6 +199,36 @@ input {
             }
         }
     }
+    &__options {
+        position: absolute;
+        top: 43px;
+        right: -179px;
+        z-index: 123;
+        width: 220px;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px;
+        &__header {
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 5px;
+            &__close-button {
+                @include icon-square;
+            }
+        }
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+    }
 }
 .taskWrapper {
     .task {
@@ -159,11 +239,13 @@ input {
         background: darken($color: #ffffff, $amount: 4%);
         position: relative;
         cursor: pointer;
+        min-height: 40px;
+        display: flex;
+        flex-wrap: wrap;
         &__edit {
             @include icon-square;
             font-size: 10px;
             color: #aaa;
-            cursor: pointer;
             position: absolute;
             top: 4px;
             right: 4px;
@@ -198,10 +280,9 @@ input {
     }
 }
 .add-new-task {
-    // text-align: center;
-    // font-size: 20px;
-    // line-height: 33px;
-    // cursor: pointer;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
 }
 .add-new-list, .add-new-task {
     &__open-add-list {

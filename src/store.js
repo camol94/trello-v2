@@ -12,17 +12,21 @@ export default new Vuex.Store({
         color: 'blue',
         image: 'https://images.freeimages.com/images/large-previews/85a/daisy-s-1375598.jpg',
         addingList: false,
-        lists: [
+        newListId: 3,
+        lists: [          
           {
             id: 1,
             title: 'list 1',
             editTitle: false,
             addingTask: false,
+            actionMenu: false,
+            newTaskId: 3,          
             tasks: [
               {
                 id: 1,
                 title: 'task 1',
                 text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...',
+                
                 labels: [
                   {
                     name: 'red',
@@ -44,6 +48,8 @@ export default new Vuex.Store({
             title: 'list 2',
             editTitle: false,
             addingTask: false,
+            actionMenu: false,
+            newTaskId: 2,
             tasks: [
               {
                 id: 1,
