@@ -19,14 +19,14 @@ export default new Vuex.Store({
             title: 'list 1',
             editTitle: false,
             addingTask: false,
-            actionMenu: false,
+            actionMenu: true,
             newTaskId: 3,          
             tasks: [
               {
                 id: 1,
                 title: 'task 1',
                 text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...',
-                
+                actionMenu: true,                
                 labels: [
                   {
                     name: 'red',
@@ -39,7 +39,8 @@ export default new Vuex.Store({
               {
                 id: 2,
                 title: 'task 2',
-                text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...'
+                text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...',
+                actionMenu: false, 
               }
             ]
           },
@@ -55,6 +56,7 @@ export default new Vuex.Store({
                 id: 1,
                 title: 'task 1',
                 text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...',
+                actionMenu: false, 
                 labels: [
                   {
                     name: 'red'

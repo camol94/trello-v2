@@ -10,13 +10,60 @@
                             {{list.title}}
                         </div>
                         <input v-else type="text" v-model="list.title" @keyup.enter="list.editTitle = !list.editTitle" class="list__header__title__edit">
-                        <span @click="toggleListOptions(list)">
+                        <!-- <span @click="toggleListOptions(list)" ref="listOptions">
                             <b-icon pack="fas" icon="ellipsis-h" class="list__header__menu"></b-icon>
-                        </span>
+                        </span> -->
+                        <!-- <listoptions v-show="list.actionMenu" @closeOptions="toggleListOptions(list)" ></listoptions> -->
+                        <b-dropdown>
+                            <button class="button list__header__menu" slot="trigger">
+                                <b-icon pack="fas" icon="ellipsis-h" ></b-icon>
+                            </button>
+                            <div class="test">test</div>
+                            <b-dropdown-item aria-role="listitem">Action</b-dropdown-item>
+                            <b-dropdown-item aria-role="listitem">Another action</b-dropdown-item>
+                            <b-dropdown-item aria-role="listitem">Something else</b-dropdown-item>
+                        </b-dropdown>
+                        
+                        <div v-show="list.actionMenu" class="list__options-wrapper" >    
+                            <div class="list__options">
+                                <div class="list__options__header">
+                                    <div class="list__options__header__title">
+                                        Actions menu {{list.title}}
+                                    </div>
+                                    <div class="list__options__header__close">
+                                        <span @click="toggleListOptions(list)"><b-icon pack="fas" icon="times" class="list__options__header__close-button" ></b-icon></span>
+                                    </div>
+                                </div>
+                                <div class="list__options__content">
+                                    <ul>
+                                        <li>Remove list</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>                    
                     <div class="taskWrapper">
                         <div v-for="task in list.tasks" class="task" :key="task.id">
-                            <b-icon pack="fas" icon="highlighter" class="task__edit"></b-icon>
+                            <span @click="toggleTaskOptions(task)">
+                                <b-icon pack="fas" icon="highlighter" class="task__edit"></b-icon>
+                            </span>
+                            <div v-show="task.actionMenu" class="task__options-wrapper" >    
+                                <div class="task__options">
+                                    <div class="task__options__header">
+                                        <div class="task__options__header__title">
+                                            Actions menu {{task.title}}
+                                        </div>
+                                        <div class="task__options__header__close">
+                                            <span @click="toggleTaskOptions(task)"><b-icon pack="fas" icon="times" class="list__options__header__close-button" ></b-icon></span>
+                                        </div>
+                                    </div>
+                                    <div class="task__options__content">
+                                        <ul>
+                                            <li>Remove list</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="task__labels">
                                 <span v-for="label in task.labels" class="task__labels__label" v-bind:style="{ background: label.name}" :key="label.name"></span>
                             </div>
@@ -40,23 +87,7 @@
                                 <b-icon pack="fas" icon="times" class="add-new-list__close-button"></b-icon>
                             </span>
                         </div> 
-                    </div>
-                    <!-- <div class="list__options" v-if="list.actionMenu">
-                        <div class="list__options__header">
-                            <div class="list__options__header__title">
-                                Actions menu
-                            </div>
-                            <div class="list__options__header__close">
-                                <span><b-icon pack="fas" icon="times" class="list__options__header__close-button" ></b-icon></span>
-                            </div>
-                        </div>
-                        <div class="list__options__content">
-                            <ul>
-                                <li>Remove list</li>
-                            </ul>
-                        </div>
-                    </div> -->
-                    <listoptions v-if="list.actionMenu" @closeOptions="toggleListOptions(list)" ></listoptions>
+                    </div>                    
                 </div>
             </div>
             <div class="listWrapper">                
@@ -132,6 +163,9 @@ export default {
         },
         toggleListOptions(list) {
             list.actionMenu = !list.actionMenu;
+        },
+        toggleTaskOptions(task) {
+            task.actionMenu = !task.actionMenu;
         }
     }
 }
@@ -199,12 +233,14 @@ input {
             }
         }
     }
-    &__options {
+    &__options-wrapper {
         position: absolute;
-        top: 43px;
+        top: 50px;
         right: -179px;
         z-index: 123;
         width: 220px;
+    }
+    &__options {        
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
@@ -242,6 +278,30 @@ input {
         min-height: 40px;
         display: flex;
         flex-wrap: wrap;
+        position: relatie;
+        &__options-wrapper {
+            position: absolute;
+            top: -1px;
+            right: -220px;
+            z-index: 123;
+            width: 220px;
+        }
+        &__options {        
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            &__header {
+                border-bottom: 1px solid #ccc;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: 5px;
+                &__close-button {
+                    @include icon-square;
+                }
+            }
+    }
         &__edit {
             @include icon-square;
             font-size: 10px;
