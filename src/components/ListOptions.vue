@@ -1,29 +1,37 @@
 <template>
     <div>
-        <!-- <div class="overlay"></div>      -->
-        <div class="list__options" v-closable="closeOptions()">
-           
-            <div class="list__options__header">
-                <div class="list__options__header__title">
-                    Actions menu
-                </div>
-                <div class="list__options__header__close">
-                    <span @click="closeOptions()"><b-icon pack="fas" icon="times" class="list__options__header__close-button" ></b-icon></span>
-                </div>
-            </div>
-            <div class="list__options__content">
-                <ul>
-                    <li>Remove list</li>
-                </ul>
-            </div>
+        <span @click="toggleOptions">
+            <b-icon pack="fas" icon="ellipsis-h" class="button-options" ></b-icon>
+        </span>
+        <div class="list__options-wrapper" v-if="list.actionMenu == true" v-on-clickaway="toggleOptions">
+            <!-- <div class="list__options">
+               <div @click="deleteList()">Delete list</div>
+               <div @click="addNewTask()">Add new task</div>
+            </div> -->
+            <b-menu class="list__options">
+                <b-menu-list>
+                    <b-menu-item label="Delete list." @click="deleteList()"></b-menu-item>
+                    <b-menu-item label="Add new task." @click="addNewTask()"></b-menu-item>
+                </b-menu-list>
+            </b-menu>
         </div>
     </div>
 </template>
 <script>
+import { mixin as clickaway } from 'vue-clickaway';
 export default {
+    props: ['list', 'index', 'board'],
+    mixins: [ clickaway ],
     methods: {
-        closeOptions() {
-            this.$emit('closeOptions')
+        toggleOptions() {
+            this.list.actionMenu = !this.list.actionMenu;
+        },
+        deleteList() {
+            this.board.lists.splice(this.index, 1);
+        },
+        addNewTask() {
+            this.list.addingTask = !this.list.addingTask;
+            this.toggleOptions();
         }
     }
 }

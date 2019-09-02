@@ -3,73 +3,27 @@
         <navigation/>
         <div class="dashboard__container" v-for="board in boards" :key="board.id">
             <h1 class="dashboard__title">Your dashboard. {{board.name}}</h1>
-            <div v-for="list in board.lists" class="listWrapper" :key="list.id">
+            <div class="listWrapper" v-for="(list, index) in board.lists" :key="list.id">
                 <div class="list">
                     <div class="list__header">
                         <div v-if="!list.editTitle" @click="list.editTitle = !list.editTitle" class="list__header__title">
                             {{list.title}}
                         </div>
                         <input v-else type="text" v-model="list.title" @keyup.enter="list.editTitle = !list.editTitle" class="list__header__title__edit">
-                        <span @click="toggleListOptions(list)">
-                            <b-icon pack="fas" icon="ellipsis-h" class="list__header__menu"></b-icon>
-                        </span>
+                        <ListOptions :list="list" :index="index" :board="board"/>
                     </div>                    
                     <div class="taskWrapper">
-                        <div v-for="task in list.tasks" class="task" :key="task.id">
-                            <b-icon pack="fas" icon="highlighter" class="task__edit"></b-icon>
-                            <div class="task__labels">
-                                <span v-for="label in task.labels" class="task__labels__label" v-bind:style="{ background: label.name}" :key="label.name"></span>
-                            </div>
-                            <div class="task__title">
-                                {{task.title}}
-                            </div>
-                            <div class="task__text">
-                                {{task.text}}
-                            </div>
-                        </div>                        
+                        <TaskItem v-for="(task, index) in list.tasks" :task="task" :key="task.id" class="task">
+                            <TaskOptions :task="task" :index="index" :list="list"/> 
+                        </TaskItem>
+                                              
                     </div>
-                    <div class="add-new-task">
-                        <div class="add-new-list__open-add-list" @click="list.addingTask = !list.addingTask"
-                        v-if="!list.addingTask" >
-                            <b-icon pack="fas" icon="plus"></b-icon>Add new task.
-                        </div>
-                        <div v-else class="add-new-list__add-list-controls">
-                            <input type="text" placeholder="Enter task name." class="add-new-list__input" v-model="addNewTaskTitle">
-                            <b-button class="add-new-list__add-button" @click="addNewTask(list)">Add task</b-button>
-                            <span @click="list.addingTask = !list.addingTask">
-                                <b-icon pack="fas" icon="times" class="add-new-list__close-button"></b-icon>
-                            </span>
-                        </div> 
-                    </div>
-                    <!-- <div class="list__options" v-if="list.actionMenu">
-                        <div class="list__options__header">
-                            <div class="list__options__header__title">
-                                Actions menu
-                            </div>
-                            <div class="list__options__header__close">
-                                <span><b-icon pack="fas" icon="times" class="list__options__header__close-button" ></b-icon></span>
-                            </div>
-                        </div>
-                        <div class="list__options__content">
-                            <ul>
-                                <li>Remove list</li>
-                            </ul>
-                        </div>
-                    </div> -->
-                    <listoptions v-if="list.actionMenu" @closeOptions="toggleListOptions(list)" ></listoptions>
+                    <TaskAddNew :list="list"/>
                 </div>
             </div>
-            <div class="listWrapper">                
-                <div class="list add-new-list">
-                    <div v-if="!board.addingList" class="add-new-list__open-add-list" @click="toggleAddingList(board)">
-                    <b-icon pack="fas" icon="plus"></b-icon>Add new list.
-                </div>                
-                <div v-else class="add-new-list__add-list-controls">
-                    <input type="text" placeholder="Enter list name." class="add-new-list__input" v-model="addNewListTitle">
-                    <b-button class="add-new-list__add-button" @click="addNewList(board)">Add list</b-button>
-                    <span @click="toggleAddingList(board)"><b-icon pack="fas" icon="times" class="add-new-list__close-button" ></b-icon></span>
-                </div>      
-                </div>              
+
+            <div class="listWrapper">
+                <ListAddNewList :board="board"/>  
             </div>
         </div>
         </div>
@@ -77,12 +31,29 @@
 
 <script>
 
+import { mixin as clickaway } from 'vue-clickaway';
+import TaskItem from '@/components/TaskItem.vue'
+import TaskOptions from '@/components/TaskOptions.vue'
+import TaskAddNew from '@/components/TaskAddNew.vue'
+import ListAddNewList from '@/components/ListAddNewList.vue'
+import ListOptions from '@/components/ListOptions.vue'
+
 export default {
+    mixins: [ clickaway ],
+    components: {
+        TaskAddNew,
+        TaskItem,
+        TaskOptions,
+        ListAddNewList,
+        ListOptions
+    },
     data() {
         return {
             boardId: this.$route.params.id,
             addNewListTitle: '',
             addNewTaskTitle: '',
+            isAddindTaskModalActive: false,
+            checkboxGroup: [],
             // getBoards: this.$store.state.boards
             // board: this.$store.state.board,
         }
@@ -93,45 +64,34 @@ export default {
         }
     },
     methods: {
-        addNewList(board) {
-            // console.log(board.newListId)
-            if (!this.addNewListTitle) {
-                return
+    //     addNewTask(list) {
+    //         console.log('Task title: ' + this.addNewTaskTitle);
+    //         if (!this.addNewTaskTitle) {
+    //             return
+    //         }
+    //         list.addingTask = false;
+    //         list.tasks.push({
+    //             id: list.newTaskId,
+    //             title: this.addNewTaskTitle,
+    //             text: '',
+    //             labels: [],
+    //         })
+    //         list.newTaskId++;
+    //         this.addNewTaskTitle = '';
+    //     },
+    //     toggleAddingList(board) {
+    //         board.addingList = !board.addingList;
+    //     },
+    //     toggleListOptions(list) {
+    //         list.actionMenu = !list.actionMenu;
+    //     }
+    },
+    directives: {
+        focus: {
+            // directive definition
+            inserted: function(el) {
+                el.focus();
             }
-            board.addingList = false;
-            board.lists.push({
-                id: board.newListId,
-                title: this.addNewListTitle,
-                editTitle: false,
-                addingTask: false,
-                actionMenu: false,
-                newTaskId: 1,
-                tasks: [],
-            });
-            board.newListId++;
-            this.addNewListTitle = '';
-            // console.log(board.newListId)
-        },
-        addNewTask(list) {
-            console.log('Task title: ' + this.addNewTaskTitle);
-            if (!this.addNewTaskTitle) {
-                return
-            }
-            list.addingTask = false;
-            list.tasks.push({
-                id: list.newTaskId,
-                title: this.addNewTaskTitle,
-                text: '',
-                labels: [],
-            })
-            list.newTaskId++;
-            this.addNewTaskTitle = '';
-        },
-        toggleAddingList(board) {
-            board.addingList = !board.addingList;
-        },
-        toggleListOptions(list) {
-            list.actionMenu = !list.actionMenu;
         }
     }
 }
@@ -167,9 +127,11 @@ input {
 .listWrapper {
     display: inline-block;
     vertical-align: top;
+    height: 100%;
 }
 .list {
-    
+    display: flex;
+    flex-direction: column;
     width: 250px;
     background: darken($color: #ffffff, $amount: 12%);
     border: 1px solid #ccc;
@@ -177,10 +139,12 @@ input {
     margin: 10px;
     padding: 12px;
     position: relative;
+    max-height: 84%;
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 5px;
         &__title {
         font-size: 16px;
         font-weight: 700;
@@ -199,26 +163,18 @@ input {
             }
         }
     }
-    &__options {
+    &__options-wrapper {
         position: absolute;
-        top: 43px;
+        top: 50px;
         right: -179px;
         z-index: 123;
         width: 220px;
+    }
+    &__options {        
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
         padding: 8px;
-        &__header {
-            border-bottom: 1px solid #ccc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 5px;
-            &__close-button {
-                @include icon-square;
-            }
-        }
     }
     .overlay {
         position: fixed;
@@ -231,17 +187,93 @@ input {
     }
 }
 .taskWrapper {
+    overflow: auto;
+    padding-right: 5px;    
     .task {
         border: 1px solid #ccc;
         border-radius: 4px;
         padding: 4px 8px;
-        margin: 8px 0;
+        margin-bottom: 5px;
         background: darken($color: #ffffff, $amount: 4%);
         position: relative;
         cursor: pointer;
         min-height: 40px;
         display: flex;
         flex-wrap: wrap;
+        position: relatie;
+        &__options-wrapper {
+            cursor: auto;
+            position: fixed;
+            z-index: 123;
+            right: 0;
+            top: 45px;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background:rgba($color: #000000, $alpha: 0.4)
+        }
+        &__options {
+            width: 700px;        
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            flex-wrap: wrap;
+            &__header {
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                padding-bottom: 5px;
+                .button {
+                    margin-left: 10px;
+                }
+            }
+            &__labels {
+                
+                &-list {
+                    position: relative;
+                    display: flex;
+                    align-content: center;
+                    align-items: center;
+                }
+                &-addLabelWindow {                    
+                    position: absolute;
+                    background: white;
+                    padding: 5px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border: 1px solid #ccc;
+                    flex-wrap: wrap;
+                    width: 114px;
+                }
+            }
+            &__label {
+                width: 30px;
+                height: 30px;
+                display: inline-block;
+                border-radius: 4px;
+                margin: 2px;
+                
+                line-height: 32px;
+                
+            }
+            &__menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                align-content: flex-start;
+            }
+            .add-new-label {
+                    text-align: center;
+                    background: #dedede;
+                }
+            &__close-button {
+                    @include icon-square;
+                }
+    }
         &__edit {
             @include icon-square;
             font-size: 10px;
@@ -263,12 +295,14 @@ input {
         }
         &__labels {
             width: 100%;
+            display: flex;
+                flex-wrap: wrap;
             &__label {
                 width: 30px;
                 height: 6px;
                 display: inline-block;
                 border-radius: 4px;
-                margin-right: 4px;
+                margin: 2px;
             }
         }
         &:hover {
@@ -305,7 +339,52 @@ input {
         
     }
 }
-button {
-    // margin: 5px;
+.button-options {
+    @include icon-square;
+    font-size: 13px;
+    color: #aaa;            
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    &:hover {
+        background: rgba($color: #000000, $alpha: 0.1)
+    }
+}
+.modal-background {
+    background-color: rgba(10, 10, 10, 0.56)
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-button {
+  width: 1px;
+  height: 1px;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border: 0px none #ffffff;
+  border-radius: 50px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #ababab;
+}
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  border: 0px none #ffffff;
+  border-radius: 50px;
+}
+::-webkit-scrollbar-track:hover {
+  background: #ffffff;
+}
+::-webkit-scrollbar-track:active {
+  background: #ffffff;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 </style>

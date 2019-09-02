@@ -26,20 +26,15 @@ export default new Vuex.Store({
                 id: 1,
                 title: 'task 1',
                 text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...',
-                
-                labels: [
-                  {
-                    name: 'red',
-                  },
-                  {
-                    name: 'blue',
-                  }
-                ]
+                actionMenu: false,                
+                labels: ['red', 'blue']
               },
               {
                 id: 2,
                 title: 'task 2',
-                text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...'
+                text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...',
+                actionMenu: false, 
+                labels: [],
               }
             ]
           },
