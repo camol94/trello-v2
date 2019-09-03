@@ -18,7 +18,9 @@
                         </TaskItem>
                                               
                     </div>
+                    <transition name="fade">
                     <TaskAddNew :list="list"/>
+                    </transition>
                 </div>
             </div>
 
@@ -288,6 +290,9 @@ input {
             font-weight: 700;
             font-size: 15px;
             white-space: normal;
+            width: 86%;
+            min-height: 26px;
+            line-height: 26px;
         }
         &__text {
             font-size: 14px;
@@ -386,5 +391,12 @@ input {
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

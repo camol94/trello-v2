@@ -5,5 +5,6 @@ module.exports = {
           data: `@import "@/styles/style.scss";`
         }
       }
-    }
+    },
+    publicPath: ‘<kabala-trello>’
   };

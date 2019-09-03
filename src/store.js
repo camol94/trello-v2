@@ -51,9 +51,7 @@ export default new Vuex.Store({
                 title: 'task 1',
                 text: 'Lorem ipsum dolor sit amet... Lorem ipsum dolor sit amet...',
                 labels: [
-                  {
-                    name: 'red'
-                  }
+                  ['red']
                 ]
               }
             ]

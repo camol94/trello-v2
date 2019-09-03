@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Buefy from 'buefy'
+import VueTextareaAutosize from 'vue-textarea-autosize'
 import 'buefy/dist/buefy.css'
 
 import Navigation from './components/Navigation.vue'
@@ -22,6 +23,7 @@ Vue.directive('focus', {
 Vue.config.productionTip = false
 
 Vue.use(Buefy)
+Vue.use(VueTextareaAutosize)
 
 new Vue({
   router,

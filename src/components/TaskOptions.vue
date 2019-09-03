@@ -13,7 +13,8 @@
                <div class="column is-four-fifths">
                     <div class="task__options__desc">
                         <div class="task__options__header">
-                        Description <b-button class="button is-small" >Edit</b-button>
+                        Description 
+                        <b-button class="button is-small" >Edit</b-button>
                     </div>
                     {{task.text}}
                     </div>
@@ -34,10 +35,10 @@
                     </div>
                </div>
                <div class="column is-one-fifth task__options__menu">
-                   <b-button>
+                   <b-button class="button is-small">
                        Remove Task.
                    </b-button>
-                   <b-button>
+                   <b-button class="button is-small">
                        Add label.
                    </b-button>
                </div>
